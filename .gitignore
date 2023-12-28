@@ -19,3 +19,5 @@ config.ts
 *.ttf
 *.woff
 *.otf
+garrysmod/.DS_Store
+.DS_Store
