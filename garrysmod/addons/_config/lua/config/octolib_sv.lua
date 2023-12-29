@@ -3,14 +3,14 @@
 ---------------------------------------------------------------------
 
 CFG.db = {
-	host = 'localhost',
+	host = 'mariadb',
 	user = 'root',
 	pass = '',
 	port = '3306',
 
-	main = 'gmod_dbg_dev',
-	admin = 'gmod_dbg_dev',
-	shop = 'gmod_dbg_dev',
+	main = 'gmod_dobrograd',
+	admin = 'gmod_dobrograd',
+	shop = 'gmod_dobrograd',
 }
 
 ---------------------------------------------------------------------

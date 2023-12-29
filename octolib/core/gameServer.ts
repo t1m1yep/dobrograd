@@ -2,7 +2,7 @@ import '../scripts/generate-env'
 
 import childProcess from 'child_process'
 import { info, ok, fail } from '../core/log'
-import config from '../../config'
+import config from '../config'
 
 export const start = () => {
 	info('Launching game server...')
@@ -20,6 +20,8 @@ export const start = () => {
 		'+map', config.map,
 		'+maxplayers', config.maxPlayers.toString(),
 		'+sv_hibernate_think', config.hibernateThink ? '1' : '0',
+		'-ip 0.0.0.0',
+		'+net_public_adr 89.35.52.89',
 	], {
 		stdio: 'inherit',
 	})
