@@ -74,7 +74,7 @@ octochat.registerCommand('/warrant', {
 					end,
 				})
 			end
-		else target:warrant(txt) end
+		else target:warrant(reason) end
 
 	end,
 	check = DarkRP.isCop,
