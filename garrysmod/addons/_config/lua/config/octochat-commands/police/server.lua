@@ -74,7 +74,7 @@ octochat.registerCommand('/warrant', {
 					end,
 				})
 			end
-		else target:warrant(reason) end
+		else target:warrant(txt) end
 
 	end,
 	check = DarkRP.isCop,
@@ -233,6 +233,189 @@ octochat.registerCommand('/carcheck', {
 			})
 		end)
 
+	end,
+	check = DarkRP.isCop,
+})
+
+octochat.registerCommand('/addbolo', {
+	cooldown = 1.5,
+	execute = function(ply)
+		octolib.request.send(ply, {{
+			type = 'strShort',
+			name = 'Марка и цвет автомобиля',
+			desc = 'Только буквы и цифры',
+			ph = "Черный Merit",
+			required = true,
+		}}, function(data)
+			local target = data[1]
+			octolib.request.send(ply, {{
+				type = 'strShort',
+				name = 'Причина подачи в розыск',
+				desc = 'Только буквы и цифры',
+				ph = "Украл пончики из полицейского департамента",
+				required = true
+			}}, function(data)
+				local reason = data[1]
+				if utf8.len(reason) < 10 then
+					return 'Укажи причину подачи в список Bolo'
+					end
+				if Bolo:isAdded(target, reason) then
+					return L.already_bolo
+				end
+
+				if ply:getJobTable().chief then
+					local chiefs = {}
+					for _, v in ipairs(player.GetAll()) do
+						if v:getJobTable().chief then
+							chiefs[#chiefs + 1] = v
+						end
+					end
+					if chiefs[1] then
+						octolib.questions.start({{
+						text = L.bolo_request:format(ply:Nick(), target, reason),
+						recipients = chiefs,
+						left = 'Одобрить',
+						right = 'Отклонить',
+						sound = 'Town.d1_town_02_elevbell1',
+						time = 40,
+						onFinish = function(res)
+							if res <= 0 then
+								ply:Notify('warning', L.warrant_denied)
+							elseif IsValid(target) then
+								Bolo:addCar(ply, target, reason)
+							end
+						end,
+					}})
+					end
+				elseif ply:getJobTable().mayor then 
+					local mayors = {}
+					for _,v in ipairs(player.GetAll()) do
+						if v:getJobTable().mayor then
+							mayors[#mayors + 1] = v
+						end
+					end
+					if mayors[1] then
+						octolib.questions.start({{
+							text = L.bolo_request:format(ply:Nick(), target, reason),
+							recipients = mayors,
+							left = 'Одобрить',
+							right = 'Отклонить',
+							sound = 'Town.d1_town_02_elevbell1',
+							time = 40,
+							onFinish = function(res)
+							if res <= 0 then
+								ply:Notify('warning', L.warrant_denied)
+							else
+								Bolo:addCar(ply, target, reason)
+							end
+						end,
+					}})
+				end
+				else 
+					Bolo:addCar(ply, target, reason) 
+				end
+			end)
+		end)
+	end,
+	check = DarkRP.isCop,
+})
+octochat.registerCommand('/getbolo', {
+	cooldown = 5,
+	execute = function(ply)
+		local i = 1
+		local bolo = Bolo
+		for car, reason in pairs(bolo.Cars) do
+			local formatted = "%d. %s : %s"
+			formatted = formatted:format(tostring(i), car, reason)
+			ply:Notify(formatted.."\n")
+			i = i+1
+		end
+		if i == 1 then
+			ply:Notify(L.bolo_empty)
+		end
+	end,
+	check = DarkRP.isCop,
+})
+
+octochat.registerCommand('/removebolo', {
+	cooldown = 1.5,
+	execute = function(ply)
+		octolib.request.send(ply, {{
+			type = 'strShort',
+			name = 'Номер автомобиля в списке',
+			desc = 'Только цифры',
+			ph = "2",
+			required = true,
+		}}, function(data)
+			local target = data[1]
+			octolib.request.send(ply, {{
+				type = 'strShort',
+				name = 'Причина удаления из списка',
+				desc = 'Только буквы и цифры',
+				ph = "Арестован",
+				required = true
+			}}, function(data)
+				local reason = data[1]
+				if utf8.len(reason) < 5 then
+				 	return 'Укажи причину подачи в список Bolo'
+				end
+				if utf8.len(target) < 1 then
+				 	return 'Укажи индекс автомобиля в списке Bolo'
+				end
+
+				if ply:getJobTable().chief then
+					local chiefs = {}
+					for _, v in ipairs(player.GetAll()) do
+						if v:getJobTable().chief then
+							chiefs[#chiefs + 1] = v
+						end
+					end
+					if chiefs[1] then
+						octolib.questions.start({{
+						text = L.bolo_request_remove:format(ply:Nick(), target, reason),
+						recipients = chiefs,
+						left = 'Одобрить',
+						right = 'Отклонить',
+						sound = 'Town.d1_town_02_elevbell1',
+						time = 40,
+						onFinish = function(res)
+							if res <= 0 then
+								ply:Notify('warning', L.warrant_denied)
+							elseif IsValid(target) then
+								Bolo:RemoveCar(ply, target, reason)
+							end
+						end,
+					}})
+					end
+				elseif ply:getJobTable().mayor then 
+					local mayors = {}
+					for _,v in ipairs(player.GetAll()) do
+						if v:getJobTable().mayor then
+							mayors[#mayors + 1] = v
+						end
+					end
+					if mayors[1] then
+						octolib.questions.start({{
+							text = L.bolo_request_remove:format(ply:Nick(), target, reason),
+							recipients = mayors,
+							left = 'Одобрить',
+							right = 'Отклонить',
+							sound = 'Town.d1_town_02_elevbell1',
+							time = 40,
+							onFinish = function(res)
+							if res <= 0 then
+								ply:Notify('warning', L.warrant_denied)
+							else
+								Bolo:RemoveCar(ply, target, reason)
+							end
+						end,
+					}})
+				end
+				else 
+					Bolo:RemoveCar(ply, target, reason) 
+				end
+			end)
+		end)
 	end,
 	check = DarkRP.isCop,
 })

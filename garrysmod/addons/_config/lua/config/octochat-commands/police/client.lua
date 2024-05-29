@@ -7,5 +7,8 @@ octochat.defineCommand('/unwanted', copData)
 octochat.defineCommand('/givelicense', copData)
 octochat.defineCommand('/takelicense', copData)
 octochat.defineCommand('/carcheck', copData)
+octochat.defineCommand('/addbolo', copData)
+octochat.defineCommand('/getbolo', copData)
+octochat.defineCommand('/removebolo', copData)
 
 octochat.defineCommand('/cr', true)
